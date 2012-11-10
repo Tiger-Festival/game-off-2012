@@ -9,7 +9,8 @@ var lblFPS;
 var fps = GAME_FRAMERATE, currTime, prevTime;
 var keystate;
 var resources;
-var debugPos = {x:0, y:0};
+var states = [];
+var currState;
 function gameLoop()
 {
 	if(resources.getLoadPercent() < 1.0){
@@ -23,24 +24,24 @@ function gameLoop()
 		lblFPS.innerHTML = "FPS: "+fps.toFixed(1);
 	}
 	keystate.updateKeys();
-	if(keystate.keyDown(KeyStateHandler.KeyCodes.E)){
-		debugPos.y -= 5;
-	}
-	if(keystate.keyDown(KeyStateHandler.KeyCodes.S)){
-		debugPos.x -= 5;
-	}
-	if(keystate.keyDown(KeyStateHandler.KeyCodes.D)){
-		debugPos.y += 5;
-	}
-	if(keystate.keyDown(KeyStateHandler.KeyCodes.F)){
-		debugPos.x += 5;
-	}
+	//RUN STATE HERE//
+	var runVal = states[currState].run();
 	context2D.save();
 	context2D.scale(scaleFactor,scaleFactor);
 	context2D.fillStyle = '#00ff00';
 	context2D.fillRect(0,0,GAME_W,GAME_H);
-	context2D.drawImage(resources.imageMap['resources/A-metroid.jpg'],debugPos.x, debugPos.y,100,100);
+	//DRAW STATE HERE//
+	states[currState].draw();
 	context2D.restore();
+	if(runVal != currState){
+		//TODO: update this switch statement when you make additional states
+		switch(runVal){
+			case State.StateEnum.TESTGAMESTATE:
+				states[runVal] = new TestGameState(context2D, resources, keystate);
+				break;
+		}
+		currState = runVal;
+	}
 }
 function scaleCanvas()
 {
@@ -50,6 +51,8 @@ function scaleCanvas()
 	$(lblFPS).css({"position":"fixed", "left":((window.innerWidth - canvas.width)/2)+"px"});
 	canvas.height = GAME_H*scaleFactor;
 	context2D = canvas.getContext('2d');
+	context2D.GAME_W = GAME_W;
+	context2D.GAME_H = GAME_H;
 }
 $(document).ready(function() {
 	currTime = prevTime = new Date;
@@ -70,5 +73,8 @@ $(document).ready(function() {
 	$(window).keyup(function(event){
 		keystate.registerKeyState((event.which) ? event.which : event.keyCode, false);
 	});
+	//TODO: change this when a new starting state is made
+	currState = State.StateEnum.TESTGAMESTATE;
+	states[currState] = new TestGameState(context2D, resources, keystate);
 	setInterval(gameLoop, 1000/GAME_FRAMERATE);
 });
