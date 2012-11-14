@@ -39,6 +39,9 @@ function gameLoop()
 			case State.StateEnum.TESTGAMESTATE:
 				states[runVal] = new TestGameState(context2D, resources, keystate);
 				break;
+			case State.StateEnum.TESTLEVELSTATE:
+				states[runVal] = new TestLevelState(context2D, resources, keystate, "test");
+				break;
 		}
 		currState = runVal;
 	}
@@ -56,8 +59,12 @@ function scaleCanvas()
 }
 $(document).ready(function() {
 	currTime = prevTime = new Date;
+	
 	resources = new ResourceHandler();
 	resources.addImage('resources/A-metroid.jpg');
+	//add all images here.
+	resources.loadTilesets();
+	resources.loadLevels();
 	canvas = document.getElementById("gameCanvas");
 	canvas.width = GAME_W;
 	canvas.height = GAME_H;
@@ -74,7 +81,12 @@ $(document).ready(function() {
 		keystate.registerKeyState((event.which) ? event.which : event.keyCode, false);
 	});
 	//TODO: change this when a new starting state is made
+	/*
 	currState = State.StateEnum.TESTGAMESTATE;
 	states[currState] = new TestGameState(context2D, resources, keystate);
+	*/
+	currState = State.StateEnum.TESTLEVELSTATE;
+	states[currState] = new TestLevelState(context2D, resources, keystate, "test");
+	
 	setInterval(gameLoop, 1000/GAME_FRAMERATE);
 });

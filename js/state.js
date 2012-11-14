@@ -5,7 +5,8 @@
 var State = function(ctx, rsc, keys){
 	State.StateEnum = {
 		TESTGAMESTATE : 0,
-		NUM_GAME_STATES : 1
+		TESTLEVELSTATE : 1,
+		NUM_GAME_STATES : 2
 	};
 	this.context2D = ctx;
 	this.resources = rsc;
